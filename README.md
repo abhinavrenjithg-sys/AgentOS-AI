@@ -22,12 +22,14 @@ Requirements: Python 3.11+, Node 20+. Docker is optional.
 
 1. In a terminal, copy `.env.example` to `.env` and optionally configure an LLM provider.
 2. Start the API: `cd backend; python -m venv .venv; .venv\Scripts\activate; pip install -r requirements.txt; alembic upgrade head; uvicorn app.main:app --reload`
-3. Start the UI in another terminal: `cd frontend; npm install; npm run dev`
+3. Start the UI in another terminal: `cd frontend; npm ci; npm run dev`
 4. Open `http://localhost:5173`. API docs are at `http://localhost:8000/docs`.
+
+Or run the local stack with Docker Compose: `docker compose up --build`. The UI, API, and database ports bind to loopback for local development.
 
 If port 8000 is already occupied, start the API with `uvicorn app.main:app --reload --port 8123`, then set `VITE_API_BASE=http://localhost:8123/api/v1` in the frontend environment (see `frontend/.env.example`).
 
-Local dev uses SQLite and a single-user development workspace; it is not production authentication. The API allows only public HTTP(S) URLs, checks resolved addresses and redirects, caps response bytes and timeouts, and does not run arbitrary model-generated code. The MVP uses a bounded HTTP reader, not Playwright, and reports that honestly in the execution record.
+Local dev uses SQLite and a single-user development workspace; it is not production authentication. The API allows only public HTTP(S) URLs, checks resolved addresses and redirects, streams responses with a 1.5 MB body cap, and does not run arbitrary model-generated code. The MVP uses a bounded HTTP reader, not Playwright, and reports that honestly in the execution record. DNS rebinding remains a documented risk; use network-level egress controls before exposing the service to untrusted users.
 
 ## Demonstration
 
@@ -63,4 +65,4 @@ Backend: `cd backend; python -m pytest`
 
 Frontend: `cd frontend; npm test` and `npm run build`
 
-Tests cover planner validation, URL policy, persistence, workflow execution, approval gating, and artifact generation.
+Tests cover planner validation, URL policy, isolated persistence, workflow execution, the approval gate, CSV formula neutralization, and artifact generation. CI runs backend lint/format checks, backend tests, frontend tests, and the production frontend build.

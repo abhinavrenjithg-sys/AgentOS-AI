@@ -1,9 +1,14 @@
 from datetime import datetime, timezone
-from sqlalchemy import String, Text, DateTime, ForeignKey, JSON, Integer
+
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .db import Base
 
-def now(): return datetime.now(timezone.utc)
+
+def now():
+    return datetime.now(timezone.utc)
+
 
 class Workflow(Base):
     __tablename__ = "workflows"
@@ -14,6 +19,7 @@ class Workflow(Base):
     version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     runs: Mapped[list["WorkflowRun"]] = relationship(back_populates="workflow")
+
 
 class WorkflowRun(Base):
     __tablename__ = "workflow_runs"
@@ -27,7 +33,10 @@ class WorkflowRun(Base):
     result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     workflow: Mapped[Workflow] = relationship(back_populates="runs")
-    steps: Mapped[list["StepRun"]] = relationship(back_populates="run", cascade="all, delete-orphan")
+    steps: Mapped[list["StepRun"]] = relationship(
+        back_populates="run", cascade="all, delete-orphan"
+    )
+
 
 class StepRun(Base):
     __tablename__ = "step_runs"
@@ -42,6 +51,7 @@ class StepRun(Base):
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     run: Mapped[WorkflowRun] = relationship(back_populates="steps")
+
 
 class Artifact(Base):
     __tablename__ = "artifacts"
