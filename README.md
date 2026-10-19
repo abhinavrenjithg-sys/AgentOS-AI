@@ -29,7 +29,11 @@ Or run the local stack with Docker Compose: `docker compose up --build`. The UI,
 
 ## GitHub Pages preview
 
-The frontend is deployed automatically from `main` to [GitHub Pages](https://abhinavrenjithg-sys.github.io/AgentOS-AI/). GitHub Pages serves static files, so the hosted preview has no workflow API until a backend is deployed separately. To connect one, add the repository Actions variable `AGENTOS_API_BASE` with the full API base URL (for example, `https://api.example.com/api/v1`) and configure that API's `FRONTEND_ORIGIN` as `https://abhinavrenjithg-sys.github.io`. A push to `main` rebuilds the page with that value. Keep API credentials on the backend; never put secrets in `VITE_*` variables.
+The frontend is deployed automatically from `main` to [GitHub Pages](https://abhinavrenjithg-sys.github.io/AgentOS-AI/). GitHub Pages serves static files; the FastAPI service runs separately. To create a demo API and PostgreSQL database from this repository, sign in to Render with GitHub and deploy the [Render Blueprint](https://render.com/deploy?repo=https://github.com/abhinavrenjithg-sys/AgentOS-AI). After the first deploy, add a repository Actions variable named `AGENTOS_API_BASE` with the Render API URL and `/api/v1` suffix, for example `https://agentos-api.onrender.com/api/v1`. Push to `main` (or rerun the Pages workflow) to rebuild the frontend with the API URL.
+
+The Blueprint uses free Render resources for a personal demo. Free web services sleep after 15 minutes without traffic, and free Render Postgres expires after 30 days; see [Render's current free-instance limits](https://render.com/docs/free). Upgrade the database before expiry to keep its data. This deployment is a public, single-workspace demo with no accounts or production authorization: do not submit secrets or sensitive data. The API already restricts research to bounded public HTTP(S) pages, but that does not replace authentication, rate limits, and network egress controls for a production service.
+
+Generated CSV bytes are stored in PostgreSQL so downloads survive Render's ephemeral application filesystem. Artifacts created before the storage migration continue to use their local files.
 
 ![Live GitHub Pages preview](docs/screenshots/agentos-github-pages.png)
 

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, LargeBinary, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -59,5 +59,6 @@ class Artifact(Base):
     run_id: Mapped[int] = mapped_column(ForeignKey("workflow_runs.id"), index=True)
     filename: Mapped[str] = mapped_column(String(200))
     path: Mapped[str] = mapped_column(Text)
+    data: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     content_type: Mapped[str] = mapped_column(String(100))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)

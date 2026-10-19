@@ -2,7 +2,7 @@ from pathlib import Path
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from sqlalchemy.orm import Session
 
 from .core import settings
@@ -32,7 +32,7 @@ def health():
     )
     return {
         "status": "ok",
-        "mode": "development",
+        "mode": settings.app_env,
         "planner": "openai_compatible" if llm_configured else "deterministic",
         "reader": "bounded_http",
         "browser_session_available": False,
@@ -106,6 +106,12 @@ def download(artifact_id: int, db: Session = Depends(get_db)):
     artifact = db.get(Artifact, artifact_id)
     if not artifact:
         raise HTTPException(404, "Artifact not found")
+    if artifact.data is not None:
+        return Response(
+            content=artifact.data,
+            media_type=artifact.content_type,
+            headers={"Content-Disposition": f'attachment; filename="{artifact.filename}"'},
+        )
     path = Path(artifact.path).resolve()
     root = Path(settings.artifact_dir).resolve()
     if root not in path.parents or not path.is_file():

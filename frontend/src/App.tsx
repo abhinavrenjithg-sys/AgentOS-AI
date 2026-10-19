@@ -36,6 +36,8 @@ const API =
   import.meta.env.VITE_API_BASE ||
   (import.meta.env.DEV ? "http://localhost:8000/api/v1" : "");
 const hostedStaticPreview = !import.meta.env.DEV && !API;
+const workspaceLabel = import.meta.env.DEV ? "Local workspace" : "Demo workspace";
+const environmentLabel = import.meta.env.DEV ? "Development mode" : "Hosted demo";
 type Step = {
   id: string;
   title: string;
@@ -243,8 +245,8 @@ export default function App() {
         <div className="workspace">
           <span className="workspace-logo">A</span>
           <div>
-            <b>Local workspace</b>
-            <small>Development mode</small>
+            <b>{workspaceLabel}</b>
+            <small>{environmentLabel}</small>
           </div>
           <ChevronDown size={14} />
         </div>
@@ -288,8 +290,8 @@ export default function App() {
           <div className="profile">
             <div className="avatar">LD</div>
             <div>
-              <b>Local developer</b>
-              <small>Development mode</small>
+              <b>Demo user</b>
+              <small>{environmentLabel}</small>
             </div>
             <Settings2 size={16} />
           </div>

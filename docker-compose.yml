@@ -17,7 +17,7 @@ services:
       DATABASE_URL: postgresql+psycopg://agentos:${POSTGRES_PASSWORD:-agentos-local-only}@db:5432/agentos
       ARTIFACT_DIR: /data/artifacts
       FRONTEND_ORIGIN: http://localhost:5173
-    ports: ["127.0.0.1:8000:8000"]
+    ports: ["127.0.0.1:8000:10000"]
     volumes: ["agentos-artifacts:/data/artifacts"]
     depends_on:
       db: {condition: service_healthy}

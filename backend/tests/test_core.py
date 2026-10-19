@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -174,6 +176,12 @@ def test_plan_approve_execute_and_download_csv(monkeypatch, tmp_path):
         assert result["record_count"] == 1
         assert result["failed_count"] == 0
         assert result["email_sent"] is False
+        from app.models import Artifact
+
+        with sessions() as db:
+            saved_artifact = db.get(Artifact, result["artifact_id"])
+            assert saved_artifact.data is not None
+            Path(saved_artifact.path).unlink()
         csv_response = client.get(f"/api/v1/artifacts/{result['artifact_id']}/download")
         assert csv_response.status_code == 200
         assert "Sample Product" in csv_response.text

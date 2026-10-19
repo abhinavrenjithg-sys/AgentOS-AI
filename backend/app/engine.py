@@ -107,6 +107,7 @@ def execute_run(db: Session, run_id: int) -> None:
                     run_id=run.id,
                     filename=filename,
                     path=str(path.resolve()),
+                    data=buffer.getvalue().encode("utf-8-sig"),
                     content_type="text/csv",
                 )
                 db.add(artifact)

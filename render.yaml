@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: agentos-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /api/v1/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_ENV
+        value: demo
+      - key: FRONTEND_ORIGIN
+        value: https://abhinavrenjithg-sys.github.io
+      - key: ARTIFACT_DIR
+        value: /tmp/agentos-artifacts
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agentos-db
+          property: connectionString
+
+databases:
+  - name: agentos-db
+    databaseName: agentos
+    user: agentos
+    plan: free
+    region: singapore
