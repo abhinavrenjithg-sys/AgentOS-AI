@@ -36,8 +36,12 @@ const API =
   import.meta.env.VITE_API_BASE ||
   (import.meta.env.DEV ? "http://localhost:8000/api/v1" : "");
 const hostedStaticPreview = !import.meta.env.DEV && !API;
-const workspaceLabel = import.meta.env.DEV ? "Local workspace" : "Demo workspace";
-const environmentLabel = import.meta.env.DEV ? "Development mode" : "Hosted demo";
+const workspaceLabel = import.meta.env.DEV
+  ? "Local workspace"
+  : "Demo workspace";
+const environmentLabel = import.meta.env.DEV
+  ? "Development mode"
+  : "Hosted demo";
 type Step = {
   id: string;
   title: string;
