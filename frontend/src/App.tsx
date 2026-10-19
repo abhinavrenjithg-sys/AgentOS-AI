@@ -32,7 +32,10 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-const API = import.meta.env.VITE_API_BASE || "http://localhost:8000/api/v1";
+const API =
+  import.meta.env.VITE_API_BASE ||
+  (import.meta.env.DEV ? "http://localhost:8000/api/v1" : "");
+const hostedStaticPreview = !import.meta.env.DEV && !API;
 type Step = {
   id: string;
   title: string;
@@ -106,6 +109,10 @@ export default function App() {
     [apiOnline, setApiOnline] = useState(false),
     [mobileOpen, setMobileOpen] = useState(false);
   const refresh = async () => {
+    if (!API) {
+      setApiOnline(false);
+      return;
+    }
     try {
       let [w, r] = await Promise.all([
         fetch(`${API}/workflows`),
@@ -123,7 +130,7 @@ export default function App() {
     void refresh();
   }, []);
   useEffect(() => {
-    if (!run || !["pending", "running"].includes(run.status)) return;
+    if (!API || !run || !["pending", "running"].includes(run.status)) return;
     const timer = setInterval(async () => {
       try {
         const res = await fetch(`${API}/runs/${run.id}`);
@@ -139,6 +146,12 @@ export default function App() {
     return () => clearInterval(timer);
   }, [run?.id, run?.status]);
   const createPlan = async () => {
+    if (!API) {
+      setError(
+        "This GitHub Pages preview has no API configured. Set VITE_API_BASE to a hosted backend URL to enable workflow planning.",
+      );
+      return;
+    }
     setError("");
     setBusy(true);
     try {
@@ -168,7 +181,7 @@ export default function App() {
     }
   };
   const approveRun = async () => {
-    if (!plan) return;
+    if (!API || !plan) return;
     setError("");
     setBusy(true);
     try {
@@ -307,6 +320,12 @@ export default function App() {
           </div>
         </header>
         <div className="page-content">
+          {hostedStaticPreview && (
+            <div className="info-banner" role="status">
+              This GitHub Pages site hosts the interface. Workflow planning,
+              execution, and saved results need a separately hosted API.
+            </div>
+          )}
           <div className="page-heading">
             <div>
               <div className="eyebrow">
@@ -823,7 +842,11 @@ export default function App() {
                       {apiOnline ? "Backend connected" : "Backend offline"}
                     </span>
                     <small>
-                      {apiOnline ? "Healthy" : "Start API on :8000"}
+                      {apiOnline
+                        ? "Healthy"
+                        : hostedStaticPreview
+                          ? "API URL not configured"
+                          : "Start API on :8000"}
                     </small>
                   </div>
                   <div className="health-row">
@@ -983,7 +1006,11 @@ function RunInspector({ run }: { run: Run }) {
               typeof s.output.artifact_id === "number" && (
                 <a
                   className="download-link"
-                  href={`${API}/artifacts/${s.output.artifact_id}/download`}
+                  href={
+                    API
+                      ? `${API}/artifacts/${s.output.artifact_id}/download`
+                      : undefined
+                  }
                 >
                   <Download size={14} />
                   CSV

@@ -969,6 +969,16 @@ footer > span {
   font-size: 10px;
   margin: -10px 0 16px;
 }
+.info-banner {
+  border: 1px solid #3c4a58;
+  border-radius: 7px;
+  background: #1b2630;
+  color: #b8cbd8;
+  padding: 11px 14px;
+  font-size: 10px;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
 .error-banner button {
   margin-left: auto;
   background: none;

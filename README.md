@@ -27,6 +27,10 @@ Requirements: Python 3.11+, Node 20+. Docker is optional.
 
 Or run the local stack with Docker Compose: `docker compose up --build`. The UI, API, and database ports bind to loopback for local development.
 
+## GitHub Pages preview
+
+The frontend is deployed automatically from `main` to [GitHub Pages](https://abhinavrenjithg-sys.github.io/AgentOS-AI/). GitHub Pages serves static files, so the hosted preview has no workflow API until a backend is deployed separately. To connect one, add the repository Actions variable `AGENTOS_API_BASE` with the full API base URL (for example, `https://api.example.com/api/v1`) and configure that API's `FRONTEND_ORIGIN` as `https://abhinavrenjithg-sys.github.io`. A push to `main` rebuilds the page with that value. Keep API credentials on the backend; never put secrets in `VITE_*` variables.
+
 If port 8000 is already occupied, start the API with `uvicorn app.main:app --reload --port 8123`, then set `VITE_API_BASE=http://localhost:8123/api/v1` in the frontend environment (see `frontend/.env.example`).
 
 Local dev uses SQLite and a single-user development workspace; it is not production authentication. The API allows only public HTTP(S) URLs, checks resolved addresses and redirects, streams responses with a 1.5 MB body cap, and does not run arbitrary model-generated code. The MVP uses a bounded HTTP reader, not Playwright, and reports that honestly in the execution record. DNS rebinding remains a documented risk; use network-level egress controls before exposing the service to untrusted users.
